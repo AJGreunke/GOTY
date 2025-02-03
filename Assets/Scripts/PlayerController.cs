@@ -23,6 +23,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Tooltip("Additional gravitation pull.")]
     private float _extraGravity = 40;
 
+    [SerializeField, Tooltip("Are we on the ground?")]
+    private bool _isGrounded = false;
+
+    [SerializeField, Tooltip("The player's main collision shape.")]
+    Collider _myCollider = null;
+
     //public bool _canReceiveInput = true;
 
     [SerializeField, Tooltip("The bullet projectile to fire.")]
@@ -30,11 +36,16 @@ public class PlayerController : MonoBehaviour
 
     Vector3 _curFacing = new Vector3(1, 0, 0);
 
+    bool _moveInput = false;
+
+    Animator _myAnimator;
 
     // Start is called before the first frame update
     void Start()
     {
         _rigidBody = GetComponent<Rigidbody>();
+        _myCollider = GetComponent<Collider>();
+        _myAnimator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -44,11 +55,15 @@ public class PlayerController : MonoBehaviour
         // grabbing this ensures we retain the gravity speed
         Vector3 curSpeed = _rigidBody.velocity;
 
+        // reset move input
+        _moveInput = false;
+
         // check to see if any of the keyboard arrows are being pressed
         // if so, adjust the speed of the player
         // also store the facing based on the keys being pressed
         if (Input.GetKey(KeyCode.RightArrow))
         {
+            _moveInput = true;
             curSpeed.x += (_movementAcceleration * Time.deltaTime);
             _curFacing.x = 1;
             _curFacing.z = 0;
@@ -56,6 +71,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
+            _moveInput = true;
             curSpeed.x -= (_movementAcceleration * Time.deltaTime);
             _curFacing.x = -1;
             _curFacing.z = 0;
@@ -63,14 +79,15 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.UpArrow))
         {
+            _moveInput = true;
             curSpeed.z += (_movementAcceleration * Time.deltaTime);
             _curFacing.z = 1;
             _curFacing.x = 0;
-
         }
 
         if (Input.GetKey(KeyCode.DownArrow))
         {
+            _moveInput = true;
             curSpeed.z -= (_movementAcceleration * Time.deltaTime);
             _curFacing.z = -1;
             _curFacing.x = 0;
@@ -89,13 +106,14 @@ public class PlayerController : MonoBehaviour
         }
 
         // does the player want to jump?
-        if (Input.GetKeyDown(KeyCode.Space) && Mathf.Abs(curSpeed.y) < 1)
+        //if ( Input.GetKeyDown(KeyCode.Space) && Mathf.Abs( curSpeed.y ) < 1 )
+        if (Input.GetKeyDown(KeyCode.Space) && CalcIsGrounded())
             curSpeed.y += _jumpVelocity;
         else
             curSpeed.y -= _extraGravity * Time.deltaTime;
 
         // fire the weapon?
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
             GameObject newBullet = Instantiate(_bulletToSpawn, transform.position, Quaternion.identity);
             Bullet bullet = newBullet.GetComponent<Bullet>();
@@ -106,6 +124,10 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        // set rotation based on facing
+        transform.LookAt(transform.position - new Vector3(_curFacing.x, 0f, _curFacing.z));
+
+        UpdateAnimation();
 
         // apply the max speed
         curSpeed.x = Mathf.Clamp(curSpeed.x, _movementVelocityMax * -1, _movementVelocityMax);
@@ -126,6 +148,39 @@ public class PlayerController : MonoBehaviour
             PickUpItem collisionItem = collider.gameObject.GetComponent<PickUpItem>();
             collisionItem.onPickedUp(this.gameObject);
         }
+    }
+
+    void UpdateAnimation()
+    {
+        if (_myAnimator == null)
+            return;
+
+        if (_moveInput)
+        {
+            _myAnimator.Play("Run");
+        }
+        else
+        {
+            _myAnimator.Play("Idle");
+        }
+
+    }
+
+    /// <summary>
+    /// Check below the player object. 
+    /// If they're standing on a solid object, they can Jump 
+    /// and perform other actions not available in mid-air.
+    /// </summary>
+    bool CalcIsGrounded()
+    {
+        float offset = 0.1f;
+
+        Vector3 pos = _myCollider.bounds.center;
+        pos.y = _myCollider.bounds.min.y - offset;
+
+        _isGrounded = Physics.CheckSphere(pos, offset);
+
+        return _isGrounded;
     }
 
 }
