@@ -12,6 +12,6 @@ public class SelfDestructTimer : MonoBehaviour
     {
         _countdownTimer -= Time.deltaTime;
         if (_countdownTimer <= 0)
-            Destroy(gameObject);
+        Destroy(gameObject);
     }
 }

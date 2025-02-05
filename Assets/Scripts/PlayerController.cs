@@ -31,6 +31,10 @@ public class PlayerController : MonoBehaviour
 
     //public bool _canReceiveInput = true;
 
+    // NEW
+    [SerializeField, Tooltip("this player's equipped Weapon.")]
+    private Weapon _weaponEquipped = null;
+
     [SerializeField, Tooltip("The bullet projectile to fire.")]
     private GameObject _bulletToSpawn;
 
@@ -51,6 +55,13 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // pause movement if we've reciently attacked
+        if (_weaponEquipped && _weaponEquipped.IsMovementPaused())
+        {
+            _rigidBody.velocity = Vector3.zero;
+            return;
+        }
+
         // get the current speed from the RigidBody physics component
         // grabbing this ensures we retain the gravity speed
         Vector3 curSpeed = _rigidBody.velocity;
@@ -115,12 +126,13 @@ public class PlayerController : MonoBehaviour
         // fire the weapon?
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            GameObject newBullet = Instantiate(_bulletToSpawn, transform.position, Quaternion.identity);
-            Bullet bullet = newBullet.GetComponent<Bullet>();
-            if (bullet)
+            if (_weaponEquipped)
             {
+                _weaponEquipped.onAttack(_curFacing);
 
-                bullet.SetDirection(new Vector3(_curFacing.x, 0f, _curFacing.z));
+                // assign animation
+                if (_weaponEquipped._attackAnim != "")
+                    _myAnimator.Play(_weaponEquipped._attackAnim);
             }
         }
 
@@ -183,4 +195,15 @@ public class PlayerController : MonoBehaviour
         return _isGrounded;
     }
 
+
+    // NEW CODE
+    #region *** Weapons ***
+
+    public void EquipWeapon(Weapon weapon)
+    {
+        _weaponEquipped = weapon;
+        weapon.SetAttachmentParent(GameObject.Find("WEAPON_LOC"), gameObject);
+    }
+
+    #endregion
 }
