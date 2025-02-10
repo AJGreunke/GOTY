@@ -117,8 +117,8 @@ public class PlayerController : MonoBehaviour
         }
 
         // does the player want to jump?
-        //if ( Input.GetKeyDown(KeyCode.Space) && Mathf.Abs( curSpeed.y ) < 1 )
-        if (Input.GetKeyDown(KeyCode.Space) && CalcIsGrounded())
+        if ( Input.GetKeyDown(KeyCode.Space) && Mathf.Abs( curSpeed.y ) < 1 )
+        //if (Input.GetKeyDown(KeyCode.Space) && CalcIsGrounded())
             curSpeed.y += _jumpVelocity;
         else
             curSpeed.y -= _extraGravity * Time.deltaTime;
@@ -171,6 +171,7 @@ public class PlayerController : MonoBehaviour
         {
             _myAnimator.Play("Run");
         }
+
         else
         {
             _myAnimator.Play("Idle");

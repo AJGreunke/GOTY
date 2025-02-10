@@ -149,8 +149,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _useParentRotation: 0
-  _pivotObj: {fileID: 0}
-  _pauseMovementMax: 0.2
+  _pivotObj: {fileID: 1223418583117787450, guid: faf9505b6af28ff4b836d3a7e0ddcd74, type: 3}
+  _pauseMovementMax: 0.1
   _bulletToSpawn: {fileID: 2365222286856047601, guid: 736f7a1bb0ef896478f714a905ea1f6e, type: 3}
   _attackAnim: SwordAttack01
   swing: {x: 45, y: -90, z: 90}

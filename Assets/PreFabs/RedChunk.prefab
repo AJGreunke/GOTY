@@ -128,5 +128,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _countdownTimer: 1.5
-  cube: {fileID: 3210597461176635410}
-  shrinkRate: -1

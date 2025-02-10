@@ -14,7 +14,7 @@ public class Weapon : MonoBehaviour
     public GameObject _pivotObj;
 
     [SerializeField, Tooltip("Pause movement after an attack?")]
-    float _pauseMovementMax = 0.2f;
+    float _pauseMovementMax = 0.4f;
     float _pauseMovementTimer = 0.0f;
 
     [SerializeField, Tooltip("The bullet projectile to fire.")]
