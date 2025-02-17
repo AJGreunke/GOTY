@@ -31,7 +31,7 @@ public class PickUpItem : MonoBehaviour
 
     public void onPickedUp(GameObject whoPickedUp)
     {
-
+        
 
         // NEW CODE
         if (GetComponent<Weapon>() != null)

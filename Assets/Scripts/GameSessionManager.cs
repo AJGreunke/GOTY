@@ -12,6 +12,7 @@ public class GameSessionManager : MonoBehaviour
     private Transform _respawnPostion;
 
     static public GameSessionManager Instance;
+    public bool cutSceneMusicActive;
 
     //string levelMap01;
 
